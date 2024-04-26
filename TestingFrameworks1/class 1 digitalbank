@@ -1,0 +1,115 @@
+package com.example;
+
+import java.io.FileInputStream;
+
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class ApptestXL {
+    WebDriver driver;
+    @BeforeMethod
+    public void setup() throws Exception
+    {
+
+        WebDriverManager.chromedriver().setup();
+        driver=new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get("http://dbankdemo.com/bank/login");
+    }
+    @SuppressWarnings("resource")
+    @Test(priority = 1)
+    public void Test1() throws Exception
+    {
+        FileInputStream fs=new FileInputStream("D:\\dbankdemo.xlsx");
+         
+        XSSFWorkbook workbook = new XSSFWorkbook(fs);
+         XSSFSheet sheet=workbook.getSheet("Orangelogin");
+         XSSFRow row1=sheet.getRow(1);
+         String username=row1.getCell(0).getStringCellValue();
+         String password=row1.getCell(1).getStringCellValue();
+
+        Thread.sleep(5000);
+        
+         driver.findElement(By.xpath("//*[@id='username']")).sendKeys(username);
+        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(password);
+        driver.findElement(By.xpath("//*[@id='submit']")).click();
+        Thread.sleep(5000);
+
+      
+    }
+    @Test(priority = 2)
+    public void Test2() throws Exception
+    {
+        FileInputStream fs=new FileInputStream("D:\\dbankdemo.xlsx");
+         
+        XSSFWorkbook workbook = new XSSFWorkbook(fs);
+         XSSFSheet sheet=workbook.getSheet("Orangelogin");
+         XSSFRow row1=sheet.getRow(1);
+         String username=row1.getCell(0).getStringCellValue();
+         String password=row1.getCell(1).getStringCellValue();
+
+        Thread.sleep(5000);
+        
+        driver.findElement(By.xpath("//*[@id='username']")).sendKeys(username);
+        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(password);
+        driver.findElement(By.xpath("//*[@id='submit']")).click();
+        driver.findElement(By.xpath("//*[@id='deposit-menu-item']")).click();
+        Select dp = new Select(driver.findElement(By.xpath("//*[@id='selectedAccount']")));
+        dp.selectByVisibleText("Individual Checking(standard checking) (Savings)");
+        Thread.sleep(2000);
+        WebElement dp1 = driver.findElement(By.xpath("//*[@id='amount']"));
+        dp1.sendKeys("5000");
+        
+        Thread.sleep(5000);
+        driver.findElement(By.xpath("//*[@id='right-panel']/div[2]/div/div/div/div/form/div[2]/button[1]")).click();
+        Thread.sleep(2000);
+
+      
+    }
+    @Test(priority = 3)
+    public void Test3() throws Exception
+    {
+        FileInputStream fs=new FileInputStream("D:\\dbankdemo.xlsx");
+         
+        XSSFWorkbook workbook = new XSSFWorkbook(fs);
+         XSSFSheet sheet=workbook.getSheet("Orangelogin");
+         XSSFRow row1=sheet.getRow(1);
+         String username=row1.getCell(0).getStringCellValue();
+         String password=row1.getCell(1).getStringCellValue();
+
+        Thread.sleep(5000);
+        
+        driver.findElement(By.xpath("//*[@id='username']")).sendKeys(username);
+        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(password);
+        driver.findElement(By.xpath("//*[@id='submit']")).click();
+        driver.findElement(By.xpath("//*[@id='withdraw-menu-item']")).click();
+        Select dp = new Select(driver.findElement(By.xpath("//*[@id='selectedAccount']")));
+        dp.selectByVisibleText("Individual Checking(standard checking) (Savings)");
+        Thread.sleep(2000);
+        WebElement dp1 = driver.findElement(By.xpath("//*[@id='amount']"));
+        dp1.sendKeys("3000");
+        
+        Thread.sleep(5000);
+        driver.findElement(By.xpath("//*[@id='right-panel']/div[2]/div/div/div/div/form/div[2]/button[1]")).click();
+        Thread.sleep(2000);
+
+      
+    }
+    @AfterMethod
+    public void TestQuit()
+    {
+        driver.quit();
+    }
+    
+}
