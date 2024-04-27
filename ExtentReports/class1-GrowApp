@@ -1,0 +1,96 @@
+package com.example;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.time.Duration;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class Appextent {
+      WebDriver driver;
+    @BeforeMethod
+    public void be()
+    {
+
+        WebDriverManager.chromedriver().setup();
+         driver = new ChromeDriver();
+        String url="https://groww.in/";
+        driver.get(url);
+    }
+    @Test(priority = 1)
+    public void runTest() throws Exception {
+        ExtentReports report = new ExtentReports();
+        ExtentSparkReporter eReporter = new ExtentSparkReporter("D:\\software\\demo\\src\\test\\java\\com\\example\\report\\ExtentReport.html");
+        report.attachReporter(eReporter);
+        ExtentTest test = report.createTest("Test One");
+        
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        WebElement calc = wait.until(ExpectedConditions
+        .elementToBeClickable(By.xpath("//*[@id=\"footer\"]/div/div[1]/div/div[1]/div[2]/div[3]/a[2]")));
+        calc.click();
+        WebElement top = wait
+        .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"root\"]/div[2]/h1")));
+        String title = top.getText();
+        if (title.equals("Calculators")) {
+            test.log(Status.PASS, "text is present");
+            System.out.println("The calc is there");
+        }else{
+            test.log(Status.FAIL, "text is not present");
+            
+        }
+        File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        FileUtils.copyFile(screenshotFile, new File("screenshot.png"));
+        WebElement homeLoan = wait.until(
+            ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"root\"]/div[2]/div[2]/a[15]/div/p[1]")));
+            homeLoan.click();
+            File file = new File("D:\\dbankdemo.xlsx");
+            FileInputStream fis = new FileInputStream(file);
+            XSSFWorkbook wb = new XSSFWorkbook(fis);
+            XSSFSheet sheet = wb.getSheet("Sheet1");
+            XSSFRow row = sheet.getRow(1);
+            String url1 = row.getCell(0).getStringCellValue();
+            WebElement loanAmt = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"LOAN_AMOUNT\"]")));
+        loanAmt.sendKeys(url1);
+        driver.findElement(By.xpath("//*[@id=\"RATE_OF_INTEREST\"]")).sendKeys("8");
+        driver.findElement(By.xpath("//*[@id=\"LOAN_TENURE\"]")).sendKeys("25");
+        String amtDetails = driver
+                .findElement(By.xpath("//*[@id=\"root\"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div/p")).getText();
+        if (amtDetails.equals("Your Amortization Details (Yearly/Monthly)")) {
+            System.out.println("The string is found");
+            report.flush();
+        }
+    }
+        // wb.close();
+       // fis.close();
+
+       @AfterMethod
+       public void af()
+       {
+        driver.close();
+       }
+
+    }
